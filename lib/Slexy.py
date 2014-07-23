@@ -22,12 +22,12 @@ class Slexy(Site):
             last_id = None
         self.ref_id = last_id
         self.BASE_URL = 'http://slexy.org'
-        self.sleep = SLEEP_SLEXY
+        self.sleep_time = SLEEP_SLEXY
         super(Slexy, self).__init__()
 
     def update(self):
         '''update(self) - Fill Queue with new Slexy IDs'''
-        logging.info('[*] Retrieving Slexy ID\'s')
+        logging.debug('[*] Retrieving Slexy ID\'s')
         results = BeautifulSoup(helper.download(self.BASE_URL + '/recent')).find_all(
             lambda tag: tag.name == 'td' and tag.a and '/view/' in tag.a['href'])
         new_pastes = []
@@ -40,7 +40,7 @@ class Slexy(Site):
                 break
             new_pastes.append(paste)
         for entry in new_pastes[::-1]:
-            logging.info('[+] Adding URL: ' + entry.url)
+            logging.debug('[+] Adding URL: ' + entry.url)
             self.put(entry)
 
     def get_paste_text(self, paste):

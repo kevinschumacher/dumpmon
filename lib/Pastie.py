@@ -22,12 +22,12 @@ class Pastie(Site):
             last_id = None
         self.ref_id = last_id
         self.BASE_URL = 'http://pastie.org'
-        self.sleep = SLEEP_PASTIE
+        self.sleep_time = SLEEP_PASTIE
         super(Pastie, self).__init__()
 
     def update(self):
         '''update(self) - Fill Queue with new Pastie IDs'''
-        logging.info('Retrieving Pastie ID\'s')
+        logging.debug('Retrieving Pastie ID\'s')
         results = [tag for tag in BeautifulSoup(helper.download(
             self.BASE_URL + '/pastes')).find_all('p', 'link') if tag.a]
         new_pastes = []

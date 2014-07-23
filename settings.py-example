@@ -23,3 +23,4 @@ SLEEP_PASTIE = 30
 # Other configuration
 tweet_history = "tweet.history"
 log_file = "output.log"
+keywords_filename = "keywords.txt"
