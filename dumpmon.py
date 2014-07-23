@@ -8,16 +8,30 @@
 #	- Refine Regex
 #	- Create/Keep track of statistics
 
-from lib.regexes import regexes
-from lib.Pastebin import Pastebin, PastebinPaste
-from lib.Slexy import Slexy, SlexyPaste
-from lib.Pastie import Pastie, PastiePaste
-from lib.helper import log
+from lib.Pastebin import Pastebin
+from lib.Slexy import Slexy
+from lib.Pastie import Pastie
 from time import sleep
 from twitter import Twitter, OAuth
 from settings import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, log_file
 import threading
 import logging
+import sys
+
+
+def initLogging(log_level):
+    logFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+    rootLogger = logging.getLogger()
+    rootLogger.setLevel(log_level)
+    
+    fileHandler = logging.FileHandler(log_file)
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+    
+    consoleHandler = logging.StreamHandler(sys.stderr)
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
+
 
 
 def monitor():
@@ -30,20 +44,25 @@ def monitor():
     parser.add_argument(
         "-v", "--verbose", help="more verbose", action="store_true")
     args = parser.parse_args()
-    level = logging.INFO
+    log_level = logging.INFO
     if args.verbose:
-        level = logging.DEBUG
-    logging.basicConfig(
-        format='%(asctime)s [%(levelname)s] %(message)s', filename=log_file, level=level)
+        log_level = logging.DEBUG
+    
+    
+    initLogging(log_level)
+    
+    
+    
     logging.info('Monitoring...')
+    
     bot = Twitter(
         auth=OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET,
             CONSUMER_KEY, CONSUMER_SECRET)
         )
-    # Create lock for both output log and tweet action
-    log_lock = threading.Lock()
+    # Create lock for tweet action
     tweet_lock = threading.Lock()
 
+    
     pastebin_thread = threading.Thread(
         target=Pastebin().monitor, args=[bot, tweet_lock])
     slexy_thread = threading.Thread(
