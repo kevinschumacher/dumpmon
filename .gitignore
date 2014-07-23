@@ -12,3 +12,6 @@ output.log
 *.swp
 *.out
 
+#pydev-project
+*.pydevproject
+*.project
