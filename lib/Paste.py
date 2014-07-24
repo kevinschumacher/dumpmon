@@ -17,6 +17,7 @@ class Paste(object):
         self.type = None
         self.sites = None
         self.db_keywords = 0.0
+        self.keywords = None
 
     def match(self):
         '''
@@ -29,8 +30,11 @@ class Paste(object):
                 self.num_hashes
                 self.db_keywords
                 self.type
+                self.keywords
 
         '''
+        
+        
         # Get the amount of emails
         self.emails = list(set(regexes['email'].findall(self.text)))
         self.hashes = regexes['hash32'].findall(self.text)
@@ -56,7 +60,16 @@ class Paste(object):
             self.type = 'honeypot'
         if regexes['google_api'].search(self.text):
             self.type = 'google_api'
-        # if regexes['juniper'].search(self.text): self.type = 'Juniper'
+
+        # search for keywords. if found, this is a keyword hit. 
+        self.keywords = set()
+        for regex in regexes['keywords']: 
+            if regex.search(self.text):
+                self.type = 'keywords'
+                self.keywords.add(regex.pattern)
+        self.keywords = list( self.keywords )  # store as list, similar to emails / hashes
+
+        
         for regex in regexes['banlist']:
             if regex.search(self.text):
                 self.type = None

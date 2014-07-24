@@ -66,14 +66,22 @@ class Site(object):
 
     def list(self):
         print('\n'.join(url for url in self.queue))
+        
+    def update(self):
+        raise NotImplementedError
+
+    def sleep(self):
+        logging.debug("No results for " + self.__class__.__name__ + ". Sleeping for " + str(self.sleep_time))
+        time.sleep(self.sleep_time)
 
     def monitor(self, bot, t_lock):
-        self.update()
+        self.sleep()
+        
         while(1):
             while not self.empty():
                 paste = self.get()
                 self.ref_id = paste.id
-                logging.info('[*] Checking ' + paste.url)
+                logging.debug('[*] Checking ' + paste.url)
                 paste.text = self.get_paste_text(paste)
                 tweet = helper.build_tweet(paste)
                 if tweet:
@@ -89,6 +97,7 @@ class Site(object):
                                 'num_hashes' : paste.num_hashes,
                                 'type' : paste.type,
                                 'db_keywords' : paste.db_keywords,
+                                'keywords': paste.keywords,
                                 'url' : paste.url
                                })
                         try:
@@ -97,6 +106,5 @@ class Site(object):
                             pass
             self.update()
             while self.empty():
-                logging.debug('[*] No results... sleeping')
-                time.sleep(self.sleep)
+                self.sleep()
                 self.update()

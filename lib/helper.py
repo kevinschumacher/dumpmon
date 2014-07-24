@@ -5,7 +5,6 @@ Author: Jordan
 '''
 
 import requests
-import settings
 from time import sleep, strftime
 import logging
 
@@ -28,14 +27,6 @@ def download(url, headers=None):
     return response
 
 
-def log(text):
-    '''
-    log(text): Logs message to both STDOUT and to .output_log file
-
-    '''
-    print(text)
-    with open(settings.log_file, 'a') as logfile:
-        logfile.write(text + '\n')
 
 
 def build_tweet(paste):
@@ -63,7 +54,7 @@ def build_tweet(paste):
             tweet += ' Possible SSH private key'
         elif paste.type == 'honeypot':
             tweet += ' Dionaea Honeypot Log'
-        tweet += ' #infoleak'
-    if paste.num_emails > 0:
-        print(paste.emails)
+        elif paste.type == 'keywords':
+            tweet += ' Keywords: ' + str(len(paste.keywords))
+            
     return tweet

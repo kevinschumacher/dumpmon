@@ -1,4 +1,32 @@
 import re
+import os
+import logging
+from settings import keywords_filename as KEYWORDS_FILENAME
+
+
+
+def build_keyword_regexes():
+    """ 
+    Attempt to read from keywords.txt file. 
+    If error during file read, just continue like nothing happened.
+    """
+    
+    # ensure the path is absolute:
+    KEYWORDS_FILENAME = os.path.abspath(KEYWORDS_FILENAME)
+    
+    logging.debug("Reading from " + KEYWORDS_FILENAME)
+    try:
+        with open (KEYWORDS_FILENAME, 'r') as keyword_file:
+            for line in keyword_file: 
+                line = line.strip()
+                if line:
+                    yield re.compile(line, re.I)
+    except IOError:
+        logging.warn("Failed to open keywords file")
+        raise StopIteration
+
+
+
 
 regexes = {
     'email': re.compile(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}', re.I),
@@ -28,6 +56,7 @@ regexes = {
             r'((available|current)\s*(databases?|dbs?)\W)', re.I),
         re.compile(r'(hacked\s*by)', re.I)
     ],
+    'keywords': list(build_keyword_regexes()),
     'blacklist': [  # I was hoping to not have to make a blacklist, but it looks like I don't really have a choice
     re.compile(
     r'(select\s+.*?from|join|declare\s+.*?\s+as\s+|update.*?set|insert.*?into)', re.I),  # SQL
@@ -61,3 +90,4 @@ regexes = {
         re.compile(r'MediaTomb UPnP Server', re.I)
     ]
 }
+
