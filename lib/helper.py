@@ -11,21 +11,26 @@ import logging
 
 MAX_TWEET_LENGTH = 140
 
-r = requests.Session()
 
 
-def download(url, headers=None):
-    if not headers:
-        headers = None
+
+def download(url, headers=None, wait=0):
+    r = requests.Session()
+
     if headers:
         r.headers.update(headers)
     try:
         response = r.get(url).text
-    except requests.ConnectionError:
-        logging.warn('[!] Critical Error - Cannot connect to site')
-        sleep(5)
-        logging.warn('[!] Retrying...')
-        response = download(url)
+    except requests.ConnectionError:        
+        # if we haven't waited before, sleep 1 second.
+        if wait == 0:
+            wait += 1
+        # if we have, double the sleep time. 
+        else: 
+            wait *= 2
+        logging.warn('Cannot connect to %s. Waiting %d seconds to retry.', url, wait)            
+        sleep(wait)
+        response = download(url, headers, wait)
     return response
 
 
