@@ -8,6 +8,7 @@ import requests
 from time import sleep, strftime
 import logging
 
+MAX_TWEET_LENGTH = 140
 
 r = requests.Session()
 
@@ -55,6 +56,13 @@ def build_tweet(paste):
         elif paste.type == 'honeypot':
             tweet += ' Dionaea Honeypot Log'
         elif paste.type == 'keywords':
-            tweet += ' Keywords: ' + str(len(paste.keywords))
+            tweet += ' Keywords: ' + str(len(paste.keywords)) + ' '
+            # actually add the keywords to the tweet (make sure you protect your tweets!):
+            tweet_kw = '|'.join(paste.keywords)
+            tweet += tweet_kw
+            # put an elipsis if tweet too long
+            if len(tweet) > MAX_TWEET_LENGTH:
+                tweet = tweet[:MAX_TWEET_LENGTH-3]+'...'
+            
             
     return tweet
