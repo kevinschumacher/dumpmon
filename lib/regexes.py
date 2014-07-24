@@ -10,6 +10,7 @@ def build_keyword_regexes():
     Attempt to read from keywords.txt file. 
     If error during file read, just continue like nothing happened.
     """
+    global KEYWORDS_FILENAME
     
     # ensure the path is absolute:
     KEYWORDS_FILENAME = os.path.abspath(KEYWORDS_FILENAME)
