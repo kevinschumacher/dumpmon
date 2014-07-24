@@ -5,7 +5,7 @@ import re
 from pymongo import MongoClient
 from requests import ConnectionError
 from twitter import TwitterError
-from settings import USE_DB, DB_HOST, DB_PORT
+from settings import USE_DB, DB_HOST, DB_PORT, TWEET_SHOW_KEYWORDS
 import logging
 import helper
 
@@ -83,7 +83,7 @@ class Site(object):
                 self.ref_id = paste.id
                 logging.debug('[*] Checking ' + paste.url)
                 paste.text = self.get_paste_text(paste)
-                tweet = helper.build_tweet(paste)
+                tweet = helper.build_tweet(paste, TWEET_SHOW_KEYWORDS)
                 if tweet:
                     logging.info(tweet)
                     with t_lock:

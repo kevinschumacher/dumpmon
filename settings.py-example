@@ -24,3 +24,7 @@ SLEEP_PASTIE = 30
 tweet_history = "tweet.history"
 log_file = "output.log"
 keywords_filename = "keywords.txt"
+
+
+# TWEET_SHOW_KEYWORDS: If True, the keywords will get printed. If False, just the counts
+TWEET_SHOW_KEYWORDS = True

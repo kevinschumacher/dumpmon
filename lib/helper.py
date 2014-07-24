@@ -8,6 +8,7 @@ import requests
 from time import sleep, strftime
 import logging
 
+
 MAX_TWEET_LENGTH = 140
 
 r = requests.Session()
@@ -30,9 +31,11 @@ def download(url, headers=None):
 
 
 
-def build_tweet(paste):
+def build_tweet(paste, show_keywords=False):
     '''
-    build_tweet(url, paste) - Determines if the paste is interesting and, if so, builds and returns the tweet accordingly
+    build_tweet(paste, show_keywords) 
+    - Determines if the paste is interesting and, if so, builds and returns the tweet accordingly
+    - if show_keywords, include items from the keyword file that matched
 
     '''
     tweet = None
@@ -46,7 +49,7 @@ def build_tweet(paste):
             if paste.num_hashes > 0 and paste.num_emails > 0:
                 tweet += ' E/H: ' + str(round(
                     paste.num_emails / float(paste.num_hashes), 2))
-            tweet += ' Keywords: ' + str(paste.db_keywords)
+            tweet += ' DB Keywords: ' + str(paste.db_keywords)
         elif paste.type == 'google_api':
             tweet += ' Found possible Google API key(s)'
         elif paste.type in ['cisco', 'juniper']:
@@ -57,12 +60,14 @@ def build_tweet(paste):
             tweet += ' Dionaea Honeypot Log'
         elif paste.type == 'keywords':
             tweet += ' Keywords: ' + str(len(paste.keywords)) + ' '
-            # actually add the keywords to the tweet (make sure you protect your tweets!):
-            tweet_kw = '|'.join(paste.keywords)
-            tweet += tweet_kw
-            # put an elipsis if tweet too long
-            if len(tweet) > MAX_TWEET_LENGTH:
-                tweet = tweet[:MAX_TWEET_LENGTH-3]+'...'
+            
+            if show_keywords:
+                # actually add the keywords to the tweet (make sure you protect your tweets!):
+                tweet_kw = '|'.join(paste.keywords)
+                tweet += tweet_kw
+                # put an elipsis if tweet too long
+                if len(tweet) > MAX_TWEET_LENGTH:
+                    tweet = tweet[:MAX_TWEET_LENGTH-3]+'...'
             
             
     return tweet

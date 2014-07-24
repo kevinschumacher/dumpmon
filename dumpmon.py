@@ -41,15 +41,17 @@ def monitor():
     '''
     import argparse
     parser = argparse.ArgumentParser()
+    # arguments to control the log level. Defaults to WARNING, but with -v goes to INFO, -d goes to DEBUG
     parser.add_argument(
-        "-v", "--verbose", help="more verbose", action="store_true")
+        "-d", "--debug", help="Debug output (TONS printed to the console)", 
+        action="store_const", dest="loglevel", const=logging.DEBUG, default=logging.WARNING)
+    parser.add_argument(
+        "-v", "--verbose", help="Verbose output (less than debug)", action="store_const", 
+        dest="loglevel", const=logging.INFO)
+    
     args = parser.parse_args()
-    log_level = logging.WARNING
-    if args.verbose:
-        log_level = logging.DEBUG
-    
-    
-    initLogging(log_level)
+       
+    initLogging(args.loglevel)
     
     
     
