@@ -75,4 +75,7 @@ def build_tweet(paste, show_keywords=False):
                     tweet = tweet[:MAX_TWEET_LENGTH-3]+'...'
             
             
+        elif paste.type == 'pgp_private':
+            tweet += ' Found possible PGP Private Key'
+
     return tweet

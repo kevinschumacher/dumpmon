@@ -70,6 +70,12 @@ class Paste(object):
         self.keywords = list( self.keywords )  # store as list, similar to emails / hashes
 
         
+        if regexes['pgp_private'].search(self.text):
+            self.type = 'pgp_private'
+        if regexes['ssh_private'].search(self.text):
+            self.type = 'ssh_private'
+        # if regexes['juniper'].search(self.text): self.type = 'Juniper'
+
         for regex in regexes['banlist']:
             if regex.search(self.text):
                 self.type = None

@@ -6,6 +6,7 @@ from time import sleep
 from settings import SLEEP_PASTEBIN
 from twitter import TwitterError
 import logging
+import requests
 
 
 class PastebinPaste(Paste):
@@ -23,14 +24,24 @@ class Pastebin(Site):
         self.ref_id = last_id
         self.BASE_URL = 'http://pastebin.com'
         self.sleep_time = SLEEP_PASTEBIN
+        self.session = requests.Session()
         super(Pastebin, self).__init__()
 
     def update(self):
         '''update(self) - Fill Queue with new Pastebin IDs'''
         logging.debug('Retrieving Pastebin ID\'s')
-        results = BeautifulSoup(helper.download(self.BASE_URL + '/archive')).find_all(
-            lambda tag: tag.name == 'td' and tag.a and '/archive/' not in tag.a['href'] and tag.a['href'][1:])
+
         new_pastes = []
+        raw = None
+        while not raw:
+            try:
+                raw = self.session.get(self.BASE_URL + '/archive').text
+            except:
+                logging.info('Error with pastebin')
+                raw = None
+                sleep(5)
+        results = BeautifulSoup(raw).find_all(
+            lambda tag: tag.name == 'td' and tag.a and '/archive/' not in tag.a['href'] and tag.a['href'][1:])
         if not self.ref_id:
             results = results[:60]
         for entry in results:
